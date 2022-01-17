@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
+
+    <title>귤 팔아요</title>
+
+    <style>
+        * {
+            font-family: 'Gaegu', cursive;
+            font-weight: bolder;
+        }
+        .wrap{
+            width : 800px;
+            margin: auto;
+        }
+        img{
+            margin: 5px auto 10px auto;
+            display: block;
+            width:350px;
+        }
+        .item-text{
+            text-align: center;
+        }
+        .item-price{
+            font-size: 15px;
+        }
+        .order{
+            width:500px;
+            margin: auto;
+        }
+        .btn{
+            background-color:darkorange;
+            margin:auto;
+            display: block;
+            width:100px;
+        }
+        .table{
+            margin: 60px auto auto auto;
+            max-width: 900px;
+        }
+
+
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            // get_rate();
+            order_listing();
+        });
+
+        // function get_rate() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "https://api.manana.kr/exchange/rate.json",
+        //         data: {},
+        //         success: function (response) {
+        //             let now_rate = response[1]['rate'];
+        //             $('#now-rate').text(now_rate);
+        //         }
+        //     })
+        // }
+
+        function order_listing() {
+            // 주문목록 보기 API 연결
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                     if (response["result"] == "success"){
+                         let orders = response['orders'];
+                         for(let i =0; i<orders.length; i++){
+                             let name = orders[i]['name'];
+                             let num = orders[i]['num'];
+                             let address = orders[i]['address'];
+                             let phone = orders[i]['phone'];
+
+                             let temp_html = `<tr>
+                                                   <th scope="row">${name}</th>
+                                                   <td>${num}</td>
+                                                   <td>${address}</td>
+                                                   <td>${phone}</td>
+                                              </tr>`
+                             $('#order-box').append(temp_html)
+                         }
+                     }
+                }
+            })
+        }
+        function postOrder() {
+            let name = $('#order-name').val()
+            let num = $('#order-num').val()
+            let address = $('#order-address').val()
+            let phone = $('#order-phone').val()
+
+
+            $.ajax({
+                    type: "POST",
+                    url: "/order",
+                    data: {name_give: name, num_give: num, address_give: address, phone_give: phone},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert(response["msg"]);
+                            window.location.reload();
+                        }
+                    }
+                }
+            )
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class ="item">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSy6C97ir2P2ztuAAUobwZDn6kBlyNGGA2nmw&usqp=CAU">
+            <div class="item-text">
+                <h2>귤 팔아요 <span class="item-price">가격은 5kg에 만원</span></h2>
+                <p>탐스럽다 잘도 익었다~<br>새콤달콤~ 멈출 수가 없네~</p>
+            </div>
+        </div>
+        <div class ="order">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-order">주문자 이름</span>
+                </div>
+                <input id = "order-name" type="text" class="form-control" aria-label="order-name"
+                       aria-describedby="inputGroup-sizing-default">
+            </div>
+
+             <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-number">수량</span>
+                </div>
+                 <select id = "order-num" class="custom-select">
+                     <option selected>--수량을 선택하세요--</option>
+                     <option value="1">1</option>
+                     <option value="2">2</option>
+                     <option value="3">3</option>
+                 </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-address">주소</span>
+                </div>
+                <input id = "order-address" type="text" class="form-control" aria-label="order-address"
+                       aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-call">전화번호</span>
+                </div>
+                <input id = "order-phone" type="text" class="form-control" aria-label="order-call"
+                       aria-describedby="inputGroup-sizing-default">
+            </div>
+
+        <input class="btn" onclick="postOrder()" type="주문하기" value="Submit">
+
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">이름</th>
+            <th scope="col">수량</th>
+            <th scope="col">주소</th>
+            <th scope="col">전화번호</th>
+        </tr>
+        </thead>
+        <tbody id="order-box">
+        </tbody>
+    </table>
+
+</body>
+
+</html>
